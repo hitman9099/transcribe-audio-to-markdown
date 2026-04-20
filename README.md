@@ -26,6 +26,8 @@
 ```text
 .
 ├── SKILL.md
+├── scripts/
+│   └── transcribe_audio_to_markdown.py
 └── agents/
     └── openai.yaml
 ```
@@ -41,6 +43,13 @@
 - 如何保留原始转写内容不做修改
 - 如何提取代办事项
 - 如何把相对时间转换为绝对日期
+
+此外，仓库还提供了一个可直接运行的脚本：
+
+- `scripts/transcribe_audio_to_markdown.py`
+  用于对本地音频做第一步离线转写，并生成：
+  - UTF-8 原始转写文本
+  - 保留原文的 Markdown 骨架文件
 
 ## 推荐输出结构
 
@@ -68,11 +77,49 @@
 
 ## 使用方式
 
+### 1. 在 Codex 中作为 skill 使用
+
 在支持 skill 的 Codex 环境中引用：
 
 ```text
 Use $transcribe-audio-to-markdown to turn this local audio file into Markdown with a raw transcript, a cleaned version, and action items.
 ```
+
+### 2. 直接运行脚本
+
+先确保本机可用：
+
+- `python`
+- `ffmpeg` 或系统可解码音频
+- `faster-whisper`
+
+如果依赖安装在工作区本地目录，例如 `.codex_vendor`，可以显式传入：
+
+```powershell
+python scripts/transcribe_audio_to_markdown.py C:\path\to\clip.m4a --output-dir C:\path\to\out --vendor-dir C:\path\to\.codex_vendor
+```
+
+如果本机 Hugging Face 缓存中已经有 `Systran/faster-whisper-small` 模型，脚本会优先复用本地缓存；否则会回退到 `small` 模型名，让 `faster-whisper` 自己处理模型加载。
+
+### 3. 真实示例
+
+```powershell
+python scripts/transcribe_audio_to_markdown.py "C:\Users\admin\xwechat_files\mahemahe_627f\msg\file\2026-04\010 5163 1600_20260419165625.m4a" --output-dir "C:\DEVS\AI\workspace\examples" --vendor-dir "C:\DEVS\AI\workspace\.codex_vendor"
+```
+
+执行后会得到两类文件：
+
+- `transcript_<音频名>.txt`
+- `<音频名>.md`
+
+其中 Markdown 会默认包含：
+
+- 说明
+- 音频信息
+- 关键信息
+- 整理后的内容
+- 原文（不做修改）
+- 代办事项
 
 如果你希望把这个 skill 安装到本地 Codex 技能目录，通常可以放到：
 
@@ -85,3 +132,4 @@ Use $transcribe-audio-to-markdown to turn this local audio file into Markdown wi
 - 这个仓库主要提供 skill 定义，不直接捆绑具体模型权重。
 - 实际转写时，优先复用本机已有的 `ffmpeg`、`python` 和缓存模型。
 - 对于学校名、人名、机构名等专有名词，仍建议人工复核一次。
+- 脚本负责稳定产出原始转写和 Markdown 骨架，最终的整理稿和代办事项更适合继续交给 Codex 按 skill 规则补全。

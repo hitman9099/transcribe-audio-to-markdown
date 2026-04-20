@@ -9,6 +9,22 @@ description: Transcribe local audio files such as .m4a, .mp3, .wav, or short vid
 
 Turn a local audio file into a Markdown note that keeps the raw transcript, adds a cleaned or translated version, and extracts actionable follow-ups. Prefer offline/local transcription first and treat the model's direct transcript output as the source of truth.
 
+## Quick Start
+
+When a deterministic first pass is useful, run the bundled script first:
+
+```powershell
+python scripts/transcribe_audio_to_markdown.py C:\path\to\clip.m4a --output-dir C:\path\to\out
+```
+
+If `faster-whisper` is installed into a workspace-local vendor directory, pass it explicitly:
+
+```powershell
+python scripts/transcribe_audio_to_markdown.py C:\path\to\clip.m4a --output-dir C:\path\to\out --vendor-dir C:\path\to\.codex_vendor
+```
+
+Then use the generated transcript and Markdown skeleton as the base artifact for the final cleaned note.
+
 ## Workflow
 
 ### 1. Confirm the input and output paths
@@ -36,6 +52,7 @@ Example:
 
 ### 3. Generate the raw transcript
 
+- Use `scripts/transcribe_audio_to_markdown.py` when a deterministic local script is preferable.
 - Use `faster-whisper` when available.
 - Use `language="zh"` when the recording is clearly Chinese; otherwise follow the user's requested language or allow detection.
 - Enable VAD for short pauses when it improves segmentation.
@@ -120,6 +137,17 @@ Prefer checklist items with explicit dates when dates are known.
 - Return the file path.
 - Summarize the most important action items in the final response.
 - Mention any names, dates, or places that may need manual confirmation because of ASR uncertainty.
+
+## Resources
+
+### scripts/
+
+- `scripts/transcribe_audio_to_markdown.py`
+  Run a local faster-whisper transcription and generate:
+  - `transcript_<stem>.txt`
+  - `<stem>.md`
+
+Use the script for the mechanical first pass, then complete the final cleaned version and action items in the Markdown file.
 
 ## Practical Notes
 
