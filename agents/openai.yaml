@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audio Transcription Notes"
+  short_description: "Turn local audio into Markdown with raw transcript, cleaned text, and action items"
+  default_prompt: "Use $transcribe-audio-to-markdown to turn this local audio file into Markdown with a raw transcript, a cleaned version, and action items."
